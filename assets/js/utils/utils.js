@@ -15,8 +15,9 @@ export function loadAssets(game) {
     game.load.spritesheet("fruit", "assets/images/fruit.png", { frameWidth: 16, frameHeight: 16 });
     game.load.spritesheet("platforms", "assets/images/platforms.png", { frameWidth: 16, frameHeight: 16 });
     game.load.spritesheet("door", "assets/images/door.png", { frameWidth: 16, frameHeight: 32 });
-    game.load.tilemapTiledJSON("level1", "assets/levels/level1.json");
-    game.load.tilemapTiledJSON("level2", "assets/levels/level2.json");
+    ["level1", "level2", "level3"].forEach(level => {
+        game.load.tilemapTiledJSON(level, `assets/levels/${level}.json`);
+    });
     game.load.spritesheet("player", "assets/images/knight.png", { frameWidth: 32, frameHeight: 32 });
 }
 export function reload(game) {
@@ -120,7 +121,7 @@ export function handlePlayerMovement(game) {
 
     if ((game.cursors.up.isDown || game.keys.W.isDown || game.keys.SPACE.isDown) && game.player.body.blocked.down) {
         game.player.setVelocityY(-190)
-    } else if (game.cursors.up.isDown && playerTile && game.player.waterTime > 15) {
+    } else if (game.cursors.up.isDown && playerTile && game.player.waterTime > 13) {
         game.player.setVelocityY(-190)
     }
 
@@ -362,7 +363,7 @@ export function signHandler(game, textsArray) {
                 p.text = textsArray[game.signCount];
                 game.signCount+=1;
                 game.Signs.push(p);
-                p.textBox = game.add.text(p.x, p.y - 40, p.text, {
+                p.textBox = game.add.text(p.x, p.y - 30, p.text, {
                     fontFamily: "Font1",
                     fontSize: 10,
                     color: "#2e2b2bff",
@@ -371,6 +372,11 @@ export function signHandler(game, textsArray) {
                     wordWrap: { width: 160 },
                     alpha: 0
                 }).setOrigin(0.5);
+                if (p.textBox.x < p.textBox.width / 2 + 5) {
+                    p.textBox.x = p.textBox.width / 2 + 5;
+                } else if (p.textBox.x > game.scale.width - p.textBox.width / 2 - 5) {
+                    p.textBox.x = game.scale.width - p.textBox.width / 2 - 5;
+                }
                 p.textBox.setAlpha(0)
                 p.textBox.Text = p.text
                 p.textBox.initialY = p.y - 40

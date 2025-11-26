@@ -34,7 +34,7 @@ export default class SecondScene extends Phaser.Scene {
         utils.crumbleHandler(this);
         utils.fruitHandler(this);
         utils.doorHandler(this);
-        utils.signHandler(this, ["String1 jisvd oioiszgoidgho sdfbong ron ni wri is ri eji wi ij ij iwi ghi ihji "])
+        utils.signHandler(this, ["Welcome to Level 1! Good luck on your adventure."]);
 
         // Sidewalls
         utils.addBorders(this, true, true, false, true);

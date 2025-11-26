@@ -1,13 +1,13 @@
 import * as utils from "../utils/utils.js"
-export default class ThirdScene extends Phaser.Scene {
+export default class FourthScene extends Phaser.Scene {
     constructor() {
-        super("ThirdScene");
+        super("FourthScene");
     }
 
     create() {
         const w = this.scale.width;
         const h = this.scale.height;
-        this.resMult = ThirdScene.resMult
+        this.resMult = FourthScene.resMult
 
         this.add.sprite(w / 2, h / 2, "sky").setOrigin(0.5).setScale(0.7 * this.resMult);
 
@@ -15,10 +15,10 @@ export default class ThirdScene extends Phaser.Scene {
         utils.defineStuff(this)
 
         // Create map, add tilesets and define layers
-        utils.processLayers(this,"level2")
+        utils.processLayers(this,"level3")
 
         // Add player
-        this.player = this.physics.add.sprite(30, 270, "player");
+        this.player = this.physics.add.sprite(30, 375, "player");
         this.player.setSize(12, 15);
         this.player.body.setOffset(10, 12);
         this.player.anims.play("idle");
@@ -33,7 +33,7 @@ export default class ThirdScene extends Phaser.Scene {
         utils.crumbleHandler(this)
         utils.fruitHandler(this)
         utils.doorHandler(this)
-        utils.signHandler(this, ["I'd be carefull if i were you, there are sharks in these waters", "Yeah... i lied about the sharks, oh and sorry about this next part"])        
+        utils.signHandler(this, [""])        
         
         // Sidewalls
         utils.addBorders(this, true, true, false, true)

@@ -28,8 +28,7 @@ export default class FirstScene extends Phaser.Scene {
         const playText = this.add.text(w / 2, 290 * FirstScene.resMult, "Press Space To Start", { fontFamily: "Arial", fontSize: 28 * FirstScene.resMult, color: "#ffffff", stroke: "#000000", strokeThickness: 6 }).setOrigin(0.5);
         this.time.addEvent({ delay: 500, callback: () => playText.visible = !playText.visible, loop: true });
 
-        // Store cursors on the scene instance instead of global variable
-        this.cursors = this.input.keyboard.createCursorKeys();
+         this.cursors = this.input.keyboard.createCursorKeys();
         this.cursors.k = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
 
         this.input.keyboard.once("keydown-SPACE", () => {
