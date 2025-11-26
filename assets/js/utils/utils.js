@@ -46,22 +46,22 @@ export function pushApart(objA, objB, pushStrength = 1) {
     }
 }
 export function scoreCount(game) {
-    if (game.score) {
-        if (game.score != game.lastscore) {
-            game.scoreText.setText(`Score: ${game.score.toString().padStart(6, '0')}`);
+    if (globalThis.score) {
+        if (globalThis.score != game.lastscore) {
+            globalThis.scoreText.setText(`Score: ${globalThis.score.toString().padStart(6, '0')}`);
             game.tweens.addCounter({
                 from: 0, to: 100, duration: 50,
                 onUpdate: (t) => {
                     const value = Math.floor(t.getValue());
-                    game.scoreText.setColor(`rgb(255, ${255 - value * 2}, 0)`);
+                    globalThis.scoreText.setColor(`rgb(255, ${255 - value * 2}, 0)`);
                 },
                 yoyo: true,
                 repeat: 2,
                 onComplete: () => {
-                    game.scoreText.setColor("#ffffff");
+                    globalThis.scoreText.setColor("#ffffff");
                 }
             });
-            game.lastscore = game.score
+            game.lastscore = globalThis.score
         }
     }
 }
@@ -125,9 +125,13 @@ export function handlePlayerMovement(game) {
     }
 
     if ((game.cursors.down.isDown || game.keys.S.isDown) && game.player.body.blocked.down) {
-        if (!game.lastRollTime || game.time.now - game.lastRollTime > 800) {
+        if (!game.lastRollTime || (game.time.now - game.lastRollTime > 800 && !game.isRolling)) {
             game.lastRollTime = game.time.now;
-            game.player.anims.play("roll", true).once("animationcomplete", () => game.player.anims.play("idle"));
+            game.isRolling = true;
+            game.player.anims.play("roll", true).once("animationcomplete", () => {
+                game.player.anims.play("idle");
+                game.isRolling = false;
+            });
         }
     }
 
@@ -166,10 +170,27 @@ export function processLayers(game, levelKey) {
         );
     });
 
+    if (game.resMult && game.resMult !== 1) {
+        if (game.cameras && game.cameras.main && typeof game.cameras.main.setZoom === 'function') {
+            game.cameras.main.setZoom(game.resMult);
+            if (typeof map.widthInPixels === 'number' && typeof map.heightInPixels === 'number') {
+                game.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+            }
+        }
+        if (game.physics && game.physics.world && typeof game.physics.world.setBounds === 'function') {
+            if (typeof map.widthInPixels === 'number' && typeof map.heightInPixels === 'number') {
+                game.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+            }
+        }
+    }
+
     layers.forEach((layer) => {
         if (!layer) return;
         layer.setCollisionByExclusion([-1]);
-        if (layer.layer.name === "Solid") game.solidLayer = layer;
+        if (layer.layer.name === "Solid") {
+            game.solidLayer = layer;
+            layer.setDepth(101);
+        }
         else if (layer.layer.name === "Box") game.boxLayer = layer;
         else if (layer.layer.name === "Bridge") game.bridgeLayer = layer;
         else if (layer.layer.name === "UDplatform") game.UDplatformLayer = layer;
@@ -177,7 +198,10 @@ export function processLayers(game, levelKey) {
         else if (layer.layer.name === "Crumble") game.crumbleLayer = layer;
         else if (layer.layer.name === "Fruit") game.fruitLayer = layer;
         else if (layer.layer.name === "Door") game.doorLayer = layer;
-        else if (layer.layer.name === "Water") game.waterLayer = layer;
+        else if (layer.layer.name === "Water") {
+            game.waterLayer = layer;
+            layer.setDepth(100);
+        }
         else if (layer.layer.name === "Signs") game.signLayer = layer;
     });
 }
@@ -216,7 +240,7 @@ export function doorHandler(game) {
         if (tile.index === 285) frame = 0;
         else return;
 
-        const door = game.physics.add.image(worldX, worldY, "door", frame);
+        const door = game.physics.add.image(worldX, worldY-16, "door", frame);
         game.doorLayer.removeTileAt(tile.x, tile.y);
         door.setImmovable(true);
         door.body.setAllowGravity(false);
@@ -323,7 +347,7 @@ export function spinPlatformHandler(game) {
         platform.collider = game.physics.add.collider(game.player, platform);
     });
 }
-export function signHandler(game, text="") {
+export function signHandler(game, textsArray) {
             if (!game.signLayer) return;
             game.signLayer.forEachTile((tile) => {
                 if (tile.index === -1) return;
@@ -331,12 +355,25 @@ export function signHandler(game, text="") {
                     tile.getCenterX(),
                     tile.getCenterY(),
                     "blocks",
-                    56
+                    tile.index-1
                 );
                 game.signLayer.removeTileAt(tile.x, tile.y);
                 p.setImmovable(true).body.setAllowGravity(false);
-                p.text = text;
+                p.text = textsArray[game.signCount];
+                game.signCount+=1;
                 game.Signs.push(p);
+                p.textBox = game.add.text(p.x, p.y - 40, p.text, {
+                    fontFamily: "Font1",
+                    fontSize: 10,
+                    color: "#2e2b2bff",
+                    stroke: "#dad8d8ff",
+                    strokeThickness: 3,
+                    wordWrap: { width: 160 },
+                    alpha: 0
+                }).setOrigin(0.5);
+                p.textBox.setAlpha(0)
+                p.textBox.Text = p.text
+                p.textBox.initialY = p.y - 40
             });
         }
 export function crumbleHandler(game) {
@@ -389,7 +426,7 @@ export function fruitHandler(game) {
         fruit.originalPos = { x: fruit.x, y: fruit.y };
         game.physics.add.overlap(game.player, fruit, () => {
             fruit.destroy();
-            game.score += fruit.score;
+            globalThis.score += fruit.score;
         });
         game.Fruits.push(fruit);
     });
@@ -406,13 +443,13 @@ export function defineStuff(game) {
     game.debug = false;
     game.keys = game.input.keyboard.addKeys('W,A,S,D,SPACE,SHIFT,Z,X,C,V,B,N,M,Q,E,R,T,Y,U,I,O,P,F,G,H,J,K,L,F1');
     game.cursors = game.input.keyboard.createCursorKeys();
-    game.score = 0
     game.lastscore = 0
-    game.scoreText = game.add
+    game.signCount = 0
+    globalThis.scoreText = game.add
         .text(
             game.scale.width - 10,
             10,
-            `Score: ${game.score.toString().padStart(6, "0")}`,
+            `Score: ${globalThis.score.toString().padStart(6, "0")}`,
             {
                 fontFamily: "Arial",
                 fontSize: 18,
@@ -475,4 +512,23 @@ export function debug(game) {
     if (Phaser.Input.Keyboard.JustDown(game.keys.F1)) {
         if(!game.debug)game.debug=true; else game.debug=false;
     }
+}
+export function signDisplay(game) {
+    game.Signs.forEach(sign => {
+        const distance = Phaser.Math.Distance.Between(game.player.x, game.player.y, sign.x, sign.y);
+
+        if (distance < 30 && sign.textBox) {
+            sign.textBox.setAlpha(Math.min(sign.textBox.alpha + 0.05, 1));
+            sign.textBox.setScale(Math.min(sign.textBox.scale + 0.05, 1));
+            if (sign.textBox.text.length < sign.textBox.Text.length && sign.textBox.alpha > 0.8) {
+                sign.textBox.text += sign.textBox.Text.charAt(sign.textBox.text.length);
+            }
+        } else if (sign.textBox) {
+            sign.textBox.setAlpha(Math.max(sign.textBox.alpha - 0.05, 0));
+            sign.textBox.setScale(Math.max(sign.textBox.scale - 0.05, 0));
+            if (sign.textBox.alpha == 0) {
+                sign.textBox.text = ""
+            }
+        }
+    });
 }

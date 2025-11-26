@@ -12,6 +12,7 @@ export default class FirstScene extends Phaser.Scene {
     create() {
         const w = this.scale.width;
         const h = this.scale.height;
+        globalThis.score = 0;
 
         // Create animations
         this.anims.create({ key: "rotate", frames: this.anims.generateFrameNumbers("coin", { start: 0, end: 11 }), frameRate: 10, repeat: -1 });
@@ -22,9 +23,9 @@ export default class FirstScene extends Phaser.Scene {
         this.anims.create({ key: "death", frames: this.anims.generateFrameNumbers("player", { start: 56, end: 59 }), frameRate: 3, repeat: 0 });
 
         // Title / UI
-        this.add.sprite(w / 2, h / 2, "sky").setOrigin(0.5).setScale(0.7);
-        const logo = this.add.sprite(w / 2, 150, "logo").setOrigin(0.5).setScale(0.6);
-        const playText = this.add.text(w / 2, 290, "Press Space To Start", { fontFamily: "Arial", fontSize: 28, color: "#ffffff", stroke: "#000000", strokeThickness: 6 }).setOrigin(0.5);
+        this.add.sprite(w / 2, h / 2, "sky").setScale(0.7 * FirstScene.resMult).setOrigin(0.5);
+        const logo = this.add.sprite(w / 2, 150 * FirstScene.resMult, "logo").setScale(0.6 * FirstScene.resMult).setOrigin(0.5);
+        const playText = this.add.text(w / 2, 290 * FirstScene.resMult, "Press Space To Start", { fontFamily: "Arial", fontSize: 28 * FirstScene.resMult, color: "#ffffff", stroke: "#000000", strokeThickness: 6 }).setOrigin(0.5);
         this.time.addEvent({ delay: 500, callback: () => playText.visible = !playText.visible, loop: true });
 
         // Store cursors on the scene instance instead of global variable

@@ -7,10 +7,10 @@ export default class SecondScene extends Phaser.Scene {
     create() {
         const w = this.scale.width;
         const h = this.scale.height;
-        this.add
-            .sprite(w / 2, h / 2, "sky")
-            .setOrigin(0.5)
-            .setScale(0.7);
+
+        this.resMult = SecondScene.resMult
+
+        this.add.sprite(w / 2, h / 2, "sky").setOrigin(0.5).setScale(0.7 * this.resMult);
 
         // Define stuff
         utils.defineStuff(this);
@@ -34,7 +34,7 @@ export default class SecondScene extends Phaser.Scene {
         utils.crumbleHandler(this);
         utils.fruitHandler(this);
         utils.doorHandler(this);
-        utils.signHandler(this, "Hello")
+        utils.signHandler(this, ["String1 jisvd oioiszgoidgho sdfbong ron ni wri is ri eji wi ij ij iwi ghi ihji "])
 
         // Sidewalls
         utils.addBorders(this, true, true, false, true);
@@ -57,6 +57,7 @@ export default class SecondScene extends Phaser.Scene {
         utils.playerPassthrough(this.SpinPlatforms, this.player);
         utils.playerPassthrough(this.UDplatforms, this.player);
         utils.playerPassthrough(this.Bridges, this.player);
+        utils.signDisplay(this)
         utils.debug(this)
         
         
