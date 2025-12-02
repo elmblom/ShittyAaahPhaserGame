@@ -1,13 +1,13 @@
 import * as utils from "../utils/utils.js"
-export default class ThirdScene extends Phaser.Scene {
+export default class Scene3 extends Phaser.Scene {
     constructor() {
-        super("ThirdScene");
+        super("Scene3");
     }
 
     create() {
         const w = this.scale.width;
         const h = this.scale.height;
-        this.resMult = ThirdScene.resMult
+        this.resMult = Scene3.resMult
 
         this.add.sprite(w / 2, h / 2, "sky").setOrigin(0.5).setScale(0.7 * this.resMult);
 
@@ -15,15 +15,10 @@ export default class ThirdScene extends Phaser.Scene {
         utils.defineStuff(this)
 
         // Create map, add tilesets and define layers
-        utils.processLayers(this,"level2")
+        utils.processLayers(this,"level3")
 
         // Add player
-        this.player = this.physics.add.sprite(30, 270, "player");
-        this.player.setSize(12, 15);
-        this.player.body.setOffset(10, 12);
-        this.player.anims.play("idle");
-        this.physics.add.collider(this.player, this.solidLayer);
-        this.player.setDepth(99)
+        utils.spawnPlayer(this, 15, 1)
 
         // Handle Layers
         utils.boxHandler(this)
@@ -33,7 +28,7 @@ export default class ThirdScene extends Phaser.Scene {
         utils.crumbleHandler(this)
         utils.fruitHandler(this)
         utils.doorHandler(this)
-        utils.signHandler(this, ["I'd be carefull if i were you, there are sharks in these waters", "Yeah... i lied about the sharks, oh and sorry about this next part"])        
+        utils.signHandler(this, ["To make up for lying about the sharks, here's one big dead shark with a laser canon on its head!"])        
         
         // Sidewalls
         utils.addBorders(this, true, true, false, true)
@@ -47,7 +42,7 @@ export default class ThirdScene extends Phaser.Scene {
         // Core update
         utils.handlePlayerMovement(this)
         utils.scoreCount(this)
-        utils.doorCheck(this,"FourthScene")
+        utils.doorCheck(this,"Scene4    ")
 
         // Optional update
         utils.pushBoxes(this)

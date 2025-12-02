@@ -1,66 +1,59 @@
-import * as utils from "../utils/utils.js";
-export default class SecondScene extends Phaser.Scene {
+import * as utils from "../utils/utils.js"
+export default class Scene2 extends Phaser.Scene {
     constructor() {
-        super("SecondScene");
+        super("Scene2");
     }
 
     create() {
         const w = this.scale.width;
         const h = this.scale.height;
-
-        this.resMult = SecondScene.resMult
+        this.resMult = Scene2.resMult
 
         this.add.sprite(w / 2, h / 2, "sky").setOrigin(0.5).setScale(0.7 * this.resMult);
 
         // Define stuff
-        utils.defineStuff(this);
+        utils.defineStuff(this)
 
         // Create map, add tilesets and define layers
-        utils.processLayers(this, "level1");
+        utils.processLayers(this,"level2")
 
         // Add player
-        this.player = this.physics.add.sprite(30, 375, "player");
-        this.player.setSize(12, 15);
-        this.player.body.setOffset(10, 12);
-        this.player.anims.play("idle");
-        this.physics.add.collider(this.player, this.solidLayer);
-        this.player.setDepth(99);
+        utils.spawnPlayer(this, 8, 1)
 
         // Handle Layers
-        utils.boxHandler(this);
-        utils.bridgeHandler(this);
-        utils.UDplatformHandler(this);
-        utils.spinPlatformHandler(this);
-        utils.crumbleHandler(this);
-        utils.fruitHandler(this);
-        utils.doorHandler(this);
-        utils.signHandler(this, ["Welcome to Level 1! Good luck on your adventure."]);
-
+        utils.boxHandler(this)
+        utils.bridgeHandler(this)
+        utils.UDplatformHandler(this)
+        utils.spinPlatformHandler(this)
+        utils.crumbleHandler(this)
+        utils.fruitHandler(this)
+        utils.doorHandler(this)
+        utils.signHandler(this, ["I'd be carefull if we were you, there are sharks in these waters", "Yeah... we lied about the sharks, oh and sorry about this next part"])        
+        
         // Sidewalls
-        utils.addBorders(this, true, true, false, true);
+        utils.addBorders(this, true, true, false, true)
 
-        this.thisReady = true;
+        this.gameReady = true
     }
 
     update() {
-        if (!this.thisReady) return;
+        if (!this.gameReady) return;
 
         // Core update
-        utils.handlePlayerMovement(this);
-        utils.scoreCount(this);
-        utils.doorCheck(this, "ThirdScene");
+        utils.handlePlayerMovement(this)
+        utils.scoreCount(this)
+        utils.doorCheck(this,"Scene3")
 
         // Optional update
-        utils.pushBoxes(this);
-        utils.crackFall(this);
-        utils.pushGroupApart(this.boxes);
-        utils.playerPassthrough(this.SpinPlatforms, this.player);
-        utils.playerPassthrough(this.UDplatforms, this.player);
-        utils.playerPassthrough(this.Bridges, this.player);
+        utils.pushBoxes(this)
+        utils.crackFall(this)
+        utils.pushGroupApart(this.boxes)
+        utils.playerPassthrough(this.SpinPlatforms,this.player)
+        utils.playerPassthrough(this.UDplatforms,this.player)
+        utils.playerPassthrough(this.bridges,this.player)
         utils.signDisplay(this)
         utils.debug(this)
         
-        
-        utils.reload(this);
+        utils.reload(this)
     }
 }

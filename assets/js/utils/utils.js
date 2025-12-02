@@ -107,15 +107,24 @@ export function pushBoxes(game) {
 export function handlePlayerMovement(game) {
     const playerTile = game.waterLayer.getTileAtWorldXY(game.player.x, game.player.y);
     if (game.cursors.left.isDown || game.keys.A.isDown) {
-        game.player.setVelocityX(-210);
-        if (game.player.anims.currentAnim?.key !== "roll") game.player.anims.play("run", true), game.player.setVelocityX(-160);
         game.player.setFlipX(true);
+        if (game.player.anims.currentAnim?.key !== "roll") {
+            game.player.anims.play("run", true) 
+            game.player.setVelocityX(Math.max(game.player.body.velocity.x - 30, -160));
+        } else {
+            game.player.setVelocityX(-210);
+        }
     } else if (game.cursors.right.isDown || game.keys.D.isDown) {
-        game.player.setVelocityX(210);
-        if (game.player.anims.currentAnim?.key !== "roll") game.player.anims.play("run", true), game.player.setVelocityX(160);
         game.player.setFlipX(false);
+        if (game.player.anims.currentAnim?.key !== "roll") {
+            game.player.anims.play("run", true) 
+            game.player.setVelocityX(Math.min(game.player.body.velocity.x + 30, 160));
+        } else {
+            game.player.setVelocityX(210);
+        }
     } else {
-        game.player.setVelocityX(0);
+        if (game.player.body.velocity.x > 0) game.player.setVelocityX(Math.max(game.player.body.velocity.x - 30, 0));
+        if (game.player.body.velocity.x < 0) game.player.setVelocityX(Math.min(game.player.body.velocity.x + 30, 0));
         if (game.player.anims.currentAnim?.key !== "roll") game.player.anims.play("idle", true);
     }
 
@@ -449,7 +458,7 @@ export function defineStuff(game) {
     game.debug = false;
     game.keys = game.input.keyboard.addKeys('W,A,S,D,SPACE,SHIFT,Z,X,C,V,B,N,M,Q,E,R,T,Y,U,I,O,P,F,G,H,J,K,L,F1');
     game.cursors = game.input.keyboard.createCursorKeys();
-    game.lastscore = 0
+    if (globalThis.score){game.lastscore = globalThis.score} else {game.lastscore = 0};
     game.signCount = 0
     globalThis.scoreText = game.add
         .text(
@@ -522,12 +531,12 @@ export function debug(game) {
 export function signDisplay(game) {
     game.Signs.forEach(sign => {
         const distance = Phaser.Math.Distance.Between(game.player.x, game.player.y, sign.x, sign.y);
-
         if (distance < 30 && sign.textBox) {
             sign.textBox.setAlpha(Math.min(sign.textBox.alpha + 0.05, 1));
             sign.textBox.setScale(Math.min(sign.textBox.scale + 0.05, 1));
             if (sign.textBox.text.length < sign.textBox.Text.length && sign.textBox.alpha > 0.8) {
                 sign.textBox.text += sign.textBox.Text.charAt(sign.textBox.text.length);
+                sign.textBox.setDepth(200)
             }
         } else if (sign.textBox) {
             sign.textBox.setAlpha(Math.max(sign.textBox.alpha - 0.05, 0));
@@ -537,4 +546,12 @@ export function signDisplay(game) {
             }
         }
     });
+}
+export function spawnPlayer(game, locationY, locationX=1) {
+    game.player = game.physics.add.sprite(locationX*16-8,game.scale.height - locationY*16 - 8, "player");
+    game.player.setSize(12, 16);
+    game.player.body.setOffset(10, 12);
+    game.player.anims.play("idle");
+    game.physics.add.collider(game.player, game.solidLayer);
+    game.player.setDepth(99);
 }
