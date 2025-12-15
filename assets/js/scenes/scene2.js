@@ -28,7 +28,7 @@ export default class Scene2 extends Phaser.Scene {
         utils.crumbleHandler(this)
         utils.fruitHandler(this)
         utils.doorHandler(this)
-        utils.signHandler(this, ["I'd be carefull if we were you, there are sharks in these waters", "Yeah... we lied about the sharks, oh and sorry about this next part"])        
+        utils.signHandler(this, ["We'd be carefull if we were you, there are sharks in these waters", "Yeah... we lied about the sharks, oh and sorry about this next part"])        
         
         // Sidewalls
         utils.addBorders(this, true, true, false, true)

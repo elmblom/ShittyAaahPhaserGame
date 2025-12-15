@@ -105,7 +105,15 @@ export function pushBoxes(game) {
     });
 }
 export function handlePlayerMovement(game) {
-    const playerTile = game.waterLayer.getTileAtWorldXY(game.player.x, game.player.y);
+    const isPlayerInWater = () => {
+        const corners = [
+            { x: game.player.x - game.player.width / 7, y: game.player.y - game.player.height / 9 },
+            { x: game.player.x + game.player.width / 7, y: game.player.y - game.player.height / 9 },
+            { x: game.player.x - game.player.width / 7, y: game.player.y + game.player.height / 3 },
+            { x: game.player.x + game.player.width / 7, y: game.player.y + game.player.height / 3 },
+        ];
+        return corners.some(corner => game.waterLayer.getTileAtWorldXY(corner.x, corner.y));
+    };
     if (game.cursors.left.isDown || game.keys.A.isDown) {
         game.player.setFlipX(true);
         if (game.player.anims.currentAnim?.key !== "roll") {
@@ -130,8 +138,8 @@ export function handlePlayerMovement(game) {
 
     if ((game.cursors.up.isDown || game.keys.W.isDown || game.keys.SPACE.isDown) && game.player.body.blocked.down) {
         game.player.setVelocityY(-190)
-    } else if (game.cursors.up.isDown && playerTile && game.player.waterTime > 13) {
-        game.player.setVelocityY(-190)
+    } else if ((game.cursors.up.isDown || game.keys.W.isDown || game.keys.SPACE.isDown) && isPlayerInWater() && game.player.waterTime > 15) {
+        game.player.setVelocityY(-150)
     }
 
     if ((game.cursors.down.isDown || game.keys.S.isDown) && game.player.body.blocked.down) {
@@ -148,7 +156,7 @@ export function handlePlayerMovement(game) {
     if (game.keys.K.isDown && game.debug == true) game.player.setVelocityY(-150);
 
     if (game.waterLayer) {
-        if (playerTile) {
+        if (isPlayerInWater()) {
             if (game.player.body.velocity.x > 50) game.player.body.setVelocityX(50);
             if (game.player.body.velocity.x < -50) game.player.body.setVelocityX(-50);
             if (game.player.body.velocity.y > 100) game.player.body.setVelocityY(100);
@@ -171,7 +179,7 @@ export function processLayers(game, levelKey) {
     const tilesetDoor = map.addTilesetImage("door", "door")
     const layers = [];
 
-    Array.from({ length: 11 }).forEach((_, i) => {
+    Array.from({ length: 12 }).forEach((_, i) => {
         layers[i] = map.createLayer(
             i,
             [tilesetBlocks, tilesetPlatforms, tilesetFruit, tilesetDoor],

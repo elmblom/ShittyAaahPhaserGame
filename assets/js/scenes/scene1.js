@@ -29,7 +29,7 @@ export default class Scene1 extends Phaser.Scene {
         utils.crumbleHandler(this);
         utils.fruitHandler(this);
         utils.doorHandler(this);
-        utils.signHandler(this, ["Welcome to Level 1! Good luck on your adventure."]);
+        utils.signHandler(this, ["amogus"]);
 
         // Sidewalls
         utils.addBorders(this, true, true, false, true);
@@ -54,7 +54,6 @@ export default class Scene1 extends Phaser.Scene {
         utils.playerPassthrough(this.Bridges, this.player);
         utils.signDisplay(this)
         utils.debug(this)
-        
         
         utils.reload(this);
     }
