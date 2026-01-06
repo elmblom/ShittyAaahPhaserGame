@@ -32,7 +32,7 @@ export default class Scene0 extends Phaser.Scene {
         this.cursors.k = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
 
         this.input.keyboard.once("keydown-SPACE", () => {
-            this.scene.start('Scene1');
+            this.scene.start('Scene3');
         });
     }
 }

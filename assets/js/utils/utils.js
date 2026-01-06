@@ -10,6 +10,7 @@ export function loadAssets(game) {
     game.load.image("logo", "assets/images/phaser.png");
     game.load.image("sky", "assets/images/sky.png");
     game.load.image("stage1", "assets/images/stage1.png");
+    game.load.image("shark", "assets/images/shark.png");
     game.load.spritesheet("coin", "assets/images/coin.png", { frameWidth: 16, frameHeight: 16 });
     game.load.spritesheet("blocks", "assets/images/world_tileset.png", { frameWidth: 16, frameHeight: 16 });
     game.load.spritesheet("fruit", "assets/images/fruit.png", { frameWidth: 16, frameHeight: 16 });
@@ -45,6 +46,9 @@ export function pushApart(objA, objB, pushStrength = 1) {
         objA.x -= nx * overlap;
         objB.x += nx * overlap;
     }
+}
+export function shark(game) {
+    const shark = game.physics.add.sprite(480, 80, "shark").setFlipX(true).setScale(1.3).body.setAllowGravity(false);
 }
 export function scoreCount(game) {
     if (globalThis.score) {

@@ -28,7 +28,8 @@ export default class Scene3 extends Phaser.Scene {
         utils.crumbleHandler(this)
         utils.fruitHandler(this)
         utils.doorHandler(this)
-        utils.signHandler(this, ["To make up for lying about the sharks, here's one big dead shark with a laser canon on its head!"])        
+        utils.signHandler(this, ["To make up for lying about the sharks, here's one big shark with a laser canon on its head!"])   
+        utils.shark(this)     
         
         // Sidewalls
         utils.addBorders(this, true, true, false, true)
